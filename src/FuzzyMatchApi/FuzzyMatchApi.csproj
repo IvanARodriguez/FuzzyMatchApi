@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FuzzyMatchApi.Core\FuzzyMatchApi.Core.csproj" />
+    <ProjectReference Include="..\FuzzyMatchApi.Infrastructure\FuzzyMatchApi.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
