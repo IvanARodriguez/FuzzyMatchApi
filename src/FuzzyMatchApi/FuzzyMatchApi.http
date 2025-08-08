@@ -1,0 +1,6 @@
+@FuzzyMatchApi_HostAddress = http://localhost:5101
+
+GET {{FuzzyMatchApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
