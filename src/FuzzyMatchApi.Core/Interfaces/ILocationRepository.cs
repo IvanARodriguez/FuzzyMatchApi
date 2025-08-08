@@ -8,3 +8,4 @@ public interface ILocationRepository
   Task<int> GetAddressCountAsync();
   Task LoadAddressDataAsync();
 }
+
