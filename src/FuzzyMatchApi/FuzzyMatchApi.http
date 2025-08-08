@@ -1,6 +1,352 @@
 @FuzzyMatchApi_HostAddress = http://localhost:5101
 
-GET {{FuzzyMatchApi_HostAddress}}/weatherforecast/
-Accept: application/json
+### Health Check - Check if service is running and data is loaded
+GET {{FuzzyMatchApi_HostAddress}}/api/address/health
+Content-Type: application/json
 
 ###
+
+### Get Location Count - Check total number of locations loaded
+GET {{FuzzyMatchApi_HostAddress}}/api/address/count
+Content-Type: application/json
+
+###
+
+### Get Sample Locations - Default (5 locations)
+GET {{FuzzyMatchApi_HostAddress}}/api/address/sample
+Content-Type: application/json
+
+###
+
+### Get Sample Locations - Custom count (10 locations)
+GET {{FuzzyMatchApi_HostAddress}}/api/address/sample?count=10
+Content-Type: application/json
+
+###
+
+### Get Sample Locations - Invalid count (should return 400)
+GET {{FuzzyMatchApi_HostAddress}}/api/address/sample?count=100
+Content-Type: application/json
+
+###
+
+### Search Address - Full Match (all fields provided)
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "company": "EASTERN TRANSPORT",
+  "street": "9726 Rose Street",
+  "city": "Fresno",
+  "state": "CO"
+}
+
+###
+
+### Search Address - Partial Company Match (fuzzy matching)
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "company": "EASTERN TRANS",
+  "street": "9726 Rose Street",
+  "city": "Fresno",
+  "state": "CO"
+}
+
+###
+
+### Search Address - Street Only
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "street": "9726 Rose Street"
+}
+
+###
+
+### Search Address - Company Only
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "company": "EASTERN TRANSPORT"
+}
+
+###
+
+### Search Address - City and State Only
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "city": "Fresno",
+  "state": "CO"
+}
+
+###
+
+### Search Address - Typos in Street (fuzzy matching test)
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "company": "EASTERN TRANSPORT",
+  "street": "9726 Rose St",
+  "city": "Fresno",
+  "state": "CO"
+}
+
+###
+
+### Search Address - Abbreviations Test
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "company": "EASTERN TRANS LLC",
+  "street": "9726 Rose St.",
+  "city": "Fresno",
+  "state": "Colorado"
+}
+
+###
+
+### Search Address - Case Insensitive Test
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "company": "eastern transport",
+  "street": "9726 rose street",
+  "city": "fresno",
+  "state": "co"
+}
+
+###
+
+### Search Address - Partial Street Match
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "street": "Rose Street",
+  "city": "Fresno"
+}
+
+###
+
+### Search Address - No Match Expected
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "company": "NON EXISTENT COMPANY",
+  "street": "123 Fake Street",
+  "city": "Nowhere",
+  "state": "XX"
+}
+
+###
+
+### Search Address - Empty Request (should return 400)
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+}
+
+###
+
+### Search Address - All Empty Strings (should return 400)
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "company": "",
+  "street": "",
+  "city": "",
+  "state": ""
+}
+
+###
+
+### Search Address - Null Values (should return 400)
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "company": null,
+  "street": null,
+  "city": null,
+  "state": null
+}
+
+###
+
+### Search Address - Very Long Company Name (should return 400)
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "company": "This is a very long company name that exceeds the maximum allowed length limit for validation purposes and should trigger a validation error when submitted to the API endpoint because it is way too long for practical use cases and database storage constraints",
+  "street": "123 Test Street",
+  "city": "Test City",
+  "state": "TX"
+}
+
+###
+
+### Search Address - Different Company Variations (test similarity algorithms)
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "company": "TRIPPLE A TRANS"
+}
+
+###
+
+### Search Address - Different Company Variations 2
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "company": "TRIPLE A TRANSPORT"
+}
+
+###
+
+### Search Address - Different Company Variations 3
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "company": "AAA TRANS"
+}
+
+###
+
+### Search Address - Street Number Variations
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "street": "123 Main Street"
+}
+
+###
+
+### Search Address - Street Name Only (no number)
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "street": "Main Street"
+}
+
+###
+
+### Search Address - Common City Names Test
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "city": "New York"
+}
+
+###
+
+### Search Address - State Code vs Full Name
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "state": "NY"
+}
+
+###
+
+### Search Address - State Full Name
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "state": "New York"
+}
+
+###
+
+### Search Address - Mixed Case and Extra Spaces
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "company": "  EASTERN    TRANSPORT  ",
+  "street": "  9726   Rose   Street  ",
+  "city": "  Fresno  ",
+  "state": "  CO  "
+}
+
+###
+
+### Search Address - Special Characters in Company Name
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "company": "EASTERN TRANSPORT LLC.",
+  "street": "9726 Rose Street",
+  "city": "Fresno",
+  "state": "CO"
+}
+
+###
+
+### Search Address - Minimum Threshold Test (very poor match)
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "company": "XYZ CORP",
+  "street": "1 A St",
+  "city": "B",
+  "state": "C"
+}
+
+###
+
+### Performance Test - Multiple similar requests
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "company": "TRANSPORT"
+}
+
+###
+
+### Search Address - Only State Provided
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "state": "CA"
+}
+
+###
+
+### Search Address - Company with Common Words
+POST {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json
+
+{
+  "company": "LOGISTICS"
+}
+
+###
+
+### Invalid HTTP Method Test (should return 405)
+GET {{FuzzyMatchApi_HostAddress}}/api/address/search
+Content-Type: application/json

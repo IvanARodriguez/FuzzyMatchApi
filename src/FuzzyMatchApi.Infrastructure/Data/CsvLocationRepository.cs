@@ -8,22 +8,56 @@ namespace FuzzyMatchApi.Infrastructure.Data;
 public class CsvLocationRepository(
     ICsvParser csvParser,
     IConfiguration configuration,
-    ILogger logger,
-    List<LocationRecord> locations
+    ILogger<CsvLocationRepository> logger
 ) : ILocationRepository
 {
-    public Task<int> GetAddressCountAsync()
+    private readonly List<LocationRecord> _locations = [];
+    private bool _isLoaded = false;
+    public async Task<int> GetAddressCountAsync()
     {
-        throw new NotImplementedException();
+        if (!_isLoaded)
+            await LoadAddressDataAsync();
+
+        return _locations.Count;
     }
 
-    public Task<IEnumerable<LocationRecord>> GetAllAddressesAsync()
+    public async Task<IEnumerable<LocationRecord>> GetAllAddressesAsync()
     {
-        throw new NotImplementedException();
+        if (!_isLoaded)
+            await LoadAddressDataAsync();
+
+        return _locations;
     }
 
-    public Task LoadAddressDataAsync()
+    public async Task LoadAddressDataAsync()
     {
-        throw new NotImplementedException();
+        if (_isLoaded)
+            return;
+
+        try
+        {
+            var csvPathFromConfig = configuration["CsvFilePath"];
+            var csvPath = !string.IsNullOrWhiteSpace(csvPathFromConfig)
+                ? Path.Combine(AppContext.BaseDirectory, csvPathFromConfig)
+                : Path.Combine(AppContext.BaseDirectory, "data", "locations.csv");
+            if (!File.Exists(csvPath))
+            {
+                logger.LogError("CSV file not found at path: {CsvPath}", csvPath);
+                return;
+            }
+
+            var records = await csvParser.ParseCsvFileAsync(csvPath);
+            _locations.Clear();
+            _locations.AddRange(records);
+
+            _isLoaded = true;
+            logger.LogInformation("Successfully loaded {Count} location records from {CsvPath}",
+                _locations.Count, csvPath);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error loading CSV data");
+            throw;
+        }
     }
 }

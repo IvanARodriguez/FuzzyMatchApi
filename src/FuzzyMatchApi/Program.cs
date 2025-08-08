@@ -1,6 +1,7 @@
 using FuzzyMatchApi.Core.Extensions;
 using FuzzyMatchApi.Infrastructure.Extensions;
 using FuzzyMatchApi.Extensions;
+using FuzzyMatchApi.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,5 +14,7 @@ builder.Services.AddInfrastructureServices();
 var app = builder.Build();
 
 app.UseHttpsRedirection();
+
+app.MapLocationEndpoints();
 
 app.Run();
