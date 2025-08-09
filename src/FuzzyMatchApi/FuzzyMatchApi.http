@@ -132,7 +132,8 @@ Content-Type: application/json
 
 {
   "street": "Rose Street",
-  "city": "Fresno"
+  "city": "Fresno",
+  "company": "eastern transport"
 }
 
 ###

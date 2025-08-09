@@ -7,8 +7,8 @@ public static class TestDataHelper
 {
     public static List<LocationRecord> GetTestLocationRecords()
     {
-        return new List<LocationRecord>
-        {
+        return
+        [
             new("L301", "123 Main Street", "New York", "NY", "10001", "TRIPPLE A TRANS LLC"),
             new("A245", "123 Main Street", "New York", "NY", "10001", "GLOBAL SHIPPING CO"),
             new("B138", "9726 Rose Street", "Fresno", "CO", "68720", "EASTERN TRANSPORT"),
@@ -19,7 +19,7 @@ public static class TestDataHelper
             new("G987", "987 Maple Drive", "Philadelphia", "PA", "19101", "SUPERIOR SHIPPING"),
             new("H111", "111 First Street", "San Antonio", "TX", "78201", "ELITE CARRIERS"),
             new("I222", "222 Second Avenue", "San Diego", "CA", "92101", "RAPID TRANSIT LLC")
-        };
+        ];
     }
 
     public static string GetTestCsvContent()

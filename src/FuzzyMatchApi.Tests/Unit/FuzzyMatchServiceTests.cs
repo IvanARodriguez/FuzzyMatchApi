@@ -1,3 +1,4 @@
+using System.Reflection;
 using FuzzyMatchApi.Core.Interfaces;
 using FuzzyMatchApi.Tests.TestData;
 using FuzzySearchApi.Core.Interfaces;
@@ -89,6 +90,50 @@ public class FuzzyMatchServiceTests
         Assert.NotNull(result);
         Assert.Equal("EASTERN TRANSPORT", result!.Record.LocationName);
         Assert.True(result.FieldScores.ContainsKey("Company"), "Expected 'Company' key to exist in FieldScores");
+
+    }
+
+    [Theory]
+    [InlineData("", "", "", "", false)] // All empty
+    [InlineData("Company", "", "", "", true)] // Company Only
+    [InlineData("", "Street", "", "", true)] // Street Only
+    [InlineData("", "", "City", "", true)] // City Only
+    [InlineData("", "", "", "CO", true)] // State Only
+    public async Task FindBestMatchAsync_ValidationScenarios_ShouldHandleCorrectly(
+        string company, string street, string city, string state, bool shouldFindResult)
+    {
+        // Arrange
+        var testData = TestDataHelper.GetTestLocationRecords();
+        _mockRepository
+            .Setup(x => x.GetAllAddressesAsync())
+            .ReturnsAsync(testData);
+
+        _mockSimilarityService
+            .Setup(x => x.CalculateWeightedSimilarity(It.IsAny<string>(), It.IsAny<string>()))
+            .Returns(0.8);
+
+        var request = TestDataHelper.CreateSearchRequest(
+            string.IsNullOrEmpty(company) ? null : company,
+            string.IsNullOrEmpty(street) ? null : street,
+            string.IsNullOrEmpty(city) ? null : city,
+            string.IsNullOrEmpty(state) ? null : state);
+
+        // Act
+        var result = await _service.FindBestMatchAsync(request);
+
+        // Assert
+        if (shouldFindResult)
+        {
+            Assert.NotNull(result);
+            return;
+        }
+        else
+        {
+
+            // Note: The service itself doesn't validate empty requests - that's done at the API level
+            // So we expect it to return null due to no matches rather than validation
+            Assert.Null(result);
+        }
 
     }
 
