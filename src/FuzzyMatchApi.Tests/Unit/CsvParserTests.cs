@@ -39,9 +39,39 @@ public class CsvParserTests
         {
             File.Delete(testCsvPath);
         }
+    }
 
+    [Fact]
+    public async Task ParseCsvFileAsync_WhenFileNotExist_ShouldThrowException()
+    {
+        // Arrange
+        var nonExistentPath = "non_existent_file.csv";
 
+        // Act & Assert
+        await Assert.ThrowsAsync<FileNotFoundException>(
+            () => _parser.ParseCsvFileAsync(nonExistentPath)
+        );
+    }
 
+    [Fact]
+    public async Task ParseCsvFileAsync_WhenEmptyFile_ShouldReturnEmptyList()
+    {
+        // Arrange
+        var testCsvPath = Path.GetTempFileName();
+        await File.WriteAllTextAsync(testCsvPath, "");
+
+        try
+        {
+            // Act
+            var result = await _parser.ParseCsvFileAsync(testCsvPath);
+
+            // Assert
+            Assert.Empty(result);
+        }
+        finally
+        {
+            File.Delete(testCsvPath);
+        }
     }
 
 }
