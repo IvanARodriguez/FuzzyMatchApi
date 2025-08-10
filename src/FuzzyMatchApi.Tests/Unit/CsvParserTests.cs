@@ -74,4 +74,31 @@ public class CsvParserTests
         }
     }
 
+    [Fact]
+    public async Task ParseCsvFileAsync_WhenMalformedLine_ShouldSkipAndContinue()
+    {
+        // Arrange
+        var malFormedCsv = @"code,street,citystate,zip,location_name
+        L301,""123 Main Street"",""New York"",""NY"",""10001"",""TRIPPLE A TRANS LLC""
+        INVALID_LINE_WITH_MISSING_FIELDS
+        B138,""9726 Rose Street"",""Fresno"",""CO"",""68720"",""EASTERN TRANSPORT""";
+
+        var testCsvPath = Path.GetTempFileName();
+        await File.WriteAllTextAsync(testCsvPath, malFormedCsv);
+
+        try
+        {
+            // Act
+            var result = await _parser.ParseCsvFileAsync(testCsvPath);
+            var resultCodes = result.Select(location => location.Code).ToList();
+            // Assert
+            Assert.Equal(2, result.Count());
+            Assert.Contains("L301", resultCodes);
+            Assert.Contains("B138", resultCodes);
+        }
+        finally
+        {
+            File.Delete(testCsvPath);
+        }
+    }
 }
