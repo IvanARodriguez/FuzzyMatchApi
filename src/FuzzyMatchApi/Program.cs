@@ -18,3 +18,5 @@ app.UseHttpsRedirection();
 app.MapLocationEndpoints();
 
 app.Run();
+
+public partial class Program { }
